@@ -1,4 +1,9 @@
 import json
+import requests
+
+# Constants
+URL_API = "http://www.omdbapi.com/"
+API_KEY = "c3bb5c1c"
 
 
 def get_movies():
@@ -21,19 +26,46 @@ def save_movies(movies):
         json.dump(movies, handle, indent=4)
 
 
-def add_movie(title, year, rating):
+def add_movie(movie_title):
     """
     Adds a movie to the movies database.
     Loads the information from the JSON file, add the movie,
     and saves it. The function doesn't need to validate the input.
     """
     movies = get_movies()
-    if title in movies:
-        print(f"Movie '{title}' already exists!")
+    if movie_title in movies:
+        print(f"Movie '{movie_title}' already exists!")
         return
 
-    movies[title] = {"year": year, "rating": rating}
+    # add the api call
+    url = f'{URL_API}?t={movie_title}&apikey={API_KEY}'
+    response = requests.get(url)
+
+    # error hangling begins with check for correct status code
+    if response.status_code != 200:
+        print("Failed to fetch data from the API")
+        return
+
+    movie_data = response.json()
+
+    # check if the movie exists
+    if movie_data.get("Response") == "False":
+        print(f"Movie '{movie_title}' not found!")
+        return
+
+    title = movie_data.get("Title", "N/A")
+    year = movie_data.get("Year", "N/A")
+    rating = movie_data.get("imdbRating", "N/A")
+    poster = movie_data.get("Poster", "N/A")
+
+    movies[title] = {
+        "year": year,
+        "rating": rating,
+        "poster": poster
+    }
+
     save_movies(movies)
+    print(f"Movie '{title}' added successfully!")
 
 
 def delete_movie(title):

@@ -71,21 +71,14 @@ def total_movies(movies):
 
 
 def add_movie():
-    """Funtion to add a movie to the list of movies"""
+    """Function to add a movie to the list of movies"""
     try:
-        movie_input = input("Please enter a movie to be added to the movie list: ")
-        rating_input = float(input("Please enter a rating for the movie (1-10): "))
-        if rating_input > 10 or rating_input < 1:
-            print("Please enter a valid rating between 1 and 10")
-            return
-
-        year_input = int(input("Please enter the year of release: "))
-        movie_storage.add_movie(movie_input, year_input, rating_input)
-        print(f"{movie_input} is the new addition and its rating is: {rating_input}")
+        movie_title = input("Please enter a movie to be added to the movie list: ").strip()
+        movie_storage.add_movie(movie_title)  # call the add_movie that reads from the api
         print("Here is the updated list:")
         list_movies(movie_storage.get_movies())  # Display updated list after adding
-    except ValueError:
-        print("Invalid input! Please enter a valid movie rating and year.")
+    except Exception as e:
+        print(f"Error: {e}")
 
 
 def delete_movie():
@@ -119,7 +112,17 @@ def update_movie():
 
 def get_movie_stats(movies):
     """Movie statistics function, gets avg, med, highest and lowest"""
-    ratings = [details["rating"] for details in movies.values()]
+    ratings = []
+    for details in movies.values():
+        try:
+            rating = float(details["rating"])  # Convert rating to float
+            ratings.append(rating)
+        except ValueError:
+            print(f"Invalid rating: {details['rating']}. Skipping this entry.")
+
+    if not ratings:
+        print("No valid ratings found.")
+        return
     # Average
     avg_rating = sum(ratings) / total_movies(movies)
     print(f"The Average Rating is: {avg_rating}")
@@ -175,10 +178,10 @@ def search_movie():
 
 
 def movie_rating_sort():
-    """Sort function"""
+    """Sort movies by rating, from highest to lowest."""
     try:
         movies = movie_storage.get_movies()
-        sorted_movies = sorted(movies.items(), key=lambda x: x[1]["rating"], reverse=True)
+        sorted_movies = sorted(movies.items(), key=lambda x: float(x[1]["rating"]), reverse=True)
         print("Here is the sorted list, best first, worst last!")
         for movie, details in sorted_movies:
             print(f"{movie} - Rating: {details['rating']} - Year: {details['year']}")
