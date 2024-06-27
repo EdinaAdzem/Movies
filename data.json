@@ -1,44 +1,4 @@
 {
-    "The Shawshank Redemption": {
-        "rating": 9.5,
-        "year": 1994
-    },
-    "Pulp Fiction": {
-        "rating": 8.8,
-        "year": 1994
-    },
-    "The Room": {
-        "rating": 3.6,
-        "year": 2003
-    },
-    "The Godfather": {
-        "rating": 9.2,
-        "year": 1972
-    },
-    "The Godfather: Part II": {
-        "rating": 9.0,
-        "year": 1974
-    },
-    "The Dark Knight": {
-        "rating": 9.0,
-        "year": 2008
-    },
-    "12 Angry Men": {
-        "rating": 8.9,
-        "year": 1957
-    },
-    "Everything Everywhere All At Once": {
-        "rating": 8.9,
-        "year": 2022
-    },
-    "Forrest Gump": {
-        "rating": 8.8,
-        "year": 1994
-    },
-    "Star Wars: Episode V": {
-        "rating": 8.7,
-        "year": 1980
-    },
     "Titanic": {
         "year": "1997",
         "rating": "7.9",
@@ -53,5 +13,22 @@
         "year": "1976",
         "rating": "8.1",
         "poster": "https://m.media-amazon.com/images/M/MV5BNTBkMjg2MjYtYTZjOS00ODQ0LTg0MDEtM2FiNmJmOGU1NGEwXkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_SX300.jpg"
+    },
+    "No Mans Land": {
+        "year": "2020",
+        "rating": "5.1",
+        "poster": "https://m.media-amazon.com/images/M/MV5BMjgwNDdkODgtMGNlMC00ZTdmLWJlYTItNjZiNDM1NGIxMTdiXkEyXkFqcGdeQXVyMTczMTM1MTQ@._V1_SX300.jpg"
+    },
+    "Bad Boys": {
+        "Title": "Bad Boys",
+        "year": "1995",
+        "rating": "6.8",
+        "poster": "https://m.media-amazon.com/images/M/MV5BMGE1ZTQ0ZTEtZTEwZS00NWE0LTlmMDUtMTE1ZWJiZTYzZTQ2XkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_SX300.jpg"
+    },
+    "Jaws": {
+        "Title": "jaws",
+        "year": "1975",
+        "rating": "8.1",
+        "poster": "https://m.media-amazon.com/images/M/MV5BMmVmODY1MzEtYTMwZC00MzNhLWFkNDMtZjAwM2EwODUxZTA5XkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_SX300.jpg"
     }
 }

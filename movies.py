@@ -2,6 +2,7 @@ import statistics
 from random import choice
 import matplotlib.pyplot as plt
 import movie_storage
+import os
 
 MENU = """
 ********** Movies Database **********
@@ -15,7 +16,7 @@ Menu:
 6. Random movie
 7. Search movie
 8. Movies sorted by rating
-9. Display Histogram
+9. Generate website
 """
 
 
@@ -29,14 +30,14 @@ def main():
             menu_options = {
                 0: exit_program,
                 1: lambda: list_movies(movie_storage.get_movies()),
-                2: add_movie,
-                3: delete_movie,
-                4: update_movie,
-                5: get_movie_stats,
+                2: add_movie_prompt,
+                3: delete_movie_prompt,
+                4: update_movie_prompt,
+                5: lambda: get_movie_stats(movie_storage.get_movies()),
                 6: random_movie_rating,
                 7: search_movie,
                 8: movie_rating_sort,
-                9: display_histogram
+                9: lambda: display_website(movie_storage.get_movies())
             }
             if user_choice in menu_options:
                 if user_choice == 5:
@@ -49,14 +50,36 @@ def main():
             print("Please enter a valid number (between 0 - 9)")
 
 
-def display_histogram(movies):
-    """Function to draw and display a Histagram representation of the movies"""
-    ratings = [details["rating"] for details in movies.values()]
-    plt.hist(ratings, bins=10, edgecolor='black')
-    plt.title('Histogram of Movie Ratings')
-    plt.xlabel('Ratings')
-    plt.ylabel('Frequency')
-    plt.show()
+def display_website(movies):
+    """Function to generate the website according to template (create a file called index.html)"""
+    TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), "_static", "index_template.html")
+    OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "index.html")
+    STYLE_PATH = os.path.join(os.path.dirname(__file__), "_static", "style.css")
+
+    with open(TEMPLATE_PATH, "r") as template_file:
+        template_content = template_file.read()
+
+    app_title = "Fun Movies"
+    template_content = template_content.replace("__TEMPLATE_TITLE__", app_title)
+
+    movie_grid = ""
+    for movie, details in movies.items():
+        movie_grid += f'<div class="movie-item">'
+        movie_grid += f'<h3>{movie}</h3>'
+        movie_grid += f'<p>Rating: {details["rating"]}</p>'
+        movie_grid += f'<p>{details["year"]}</p>'
+        if "poster" in details:
+            movie_grid += f'<p><img src="{details["poster"]}" alt="{movie}"></p>'
+        else:
+            movie_grid += '<p>Poster not available</p>'
+        movie_grid += f'</div>\n'
+
+    template_content = template_content.replace("__TEMPLATE_MOVIE_GRID__", movie_grid)
+
+    with open(OUTPUT_PATH, "w") as output_file:
+        output_file.write(template_content)
+
+    print(f"Generated {OUTPUT_PATH} successfully!")
 
 
 def list_movies(movies):
@@ -70,44 +93,45 @@ def total_movies(movies):
     return len(movies)
 
 
-def add_movie():
-    """Function to add a movie to the list of movies"""
+def add_movie_prompt():
+    """Prompt user for movie title and add it to the database"""
     try:
         movie_title = input("Please enter a movie to be added to the movie list: ").strip()
-        movie_storage.add_movie(movie_title)  # call the add_movie that reads from the api
+        movie_storage.add_movie(movie_title)
         print("Here is the updated list:")
         list_movies(movie_storage.get_movies())  # Display updated list after adding
     except Exception as e:
         print(f"Error: {e}")
 
-
-def delete_movie():
-    """Funtion to delete a movie from the list"""
+def delete_movie_prompt():
+    """Prompt user for movie title and delete it from the database"""
     try:
-        delete_movie_input = input("Please enter a movie to be 'deleted' from the movie list: ").strip().lower()
-        movie_storage.delete_movie(delete_movie_input)
-        print(f"The movie '{delete_movie_input}' has been deleted!")
-        print("Here is the updated list:")
-        list_movies(movie_storage.get_movies())  # Display updated list to keep me sane
-    except KeyError:
-        print(f"The movie '{delete_movie_input}' is not in the list.")
+        movie_title = input("Please enter a movie to be deleted from the movie list: ").lower()
+        movie_deleted = movie_storage.delete_movie(movie_title)
+        if movie_deleted:
+            print(f"Movie '{movie_title}' has been deleted.")
+            print("Here is the updated list:")
+            list_movies(movie_storage.get_movies())  # Display updated list after deletion
+        else:
+            print(f"Movie '{movie_title}' was not found.")
+    except Exception as e:
+        print(f"Error: {e}")
 
-
-def update_movie():
-    """ Function to update the rating of a movie """
+def update_movie_prompt():
+    """Prompt user for movie title and new rating to update the movie"""
     try:
-        title = input("Enter the movie title to update: ").strip().lower()
-        rating = float(input("Enter the new rating (1-10): "))
-        if rating < 1 or rating > 10:
+        movie_title = input("Enter the movie title to update: ").strip().lower()
+        new_rating = float(input("Enter the new rating (1-10): "))
+        if new_rating < 1 or new_rating > 10:
             print("Rating should be between 1 and 10.")
             return
 
-        movie_storage.update_movie(title, rating)
-        print(f"Movie '{title}' rating updated to {rating}")
+        movie_storage.update_movie(movie_title, new_rating)
         print("Here is the updated list:")
         list_movies(movie_storage.get_movies())  # Display updated list after updating
     except ValueError:
         print("Invalid rating! Please enter a valid movie rating.")
+
 
 
 def get_movie_stats(movies):
@@ -115,7 +139,7 @@ def get_movie_stats(movies):
     ratings = []
     for details in movies.values():
         try:
-            rating = float(details["rating"])  # Convert rating to float
+            rating = float(details["rating"])  # Convert
             ratings.append(rating)
         except ValueError:
             print(f"Invalid rating: {details['rating']}. Skipping this entry.")
